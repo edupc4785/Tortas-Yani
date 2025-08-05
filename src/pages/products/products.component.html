@@ -1,0 +1,88 @@
+<div class="container py-4">
+
+<!-- CATEGORÍAS + BOTÓN CARRITO -->
+<div class="text-center mb-4">
+<h2 class="mb-3">Selecciona una Categoría</h2>
+<div class="d-flex flex-wrap justify-content-center align-items-center gap-2">
+
+  <!-- Botones de categorías -->
+  <button
+    *ngFor="let categoria of categorias"
+    class="btn btn-categoria"
+    [class.active]="categoria === categoriaSeleccionada"
+    (click)="seleccionarCategoria(categoria)"
+  >
+    {{ categoria }}
+  </button>
+
+  <!-- Botón de carrito -->
+  <button class="btn btn-carrito ms-3" (click)="mostrarCarrito = !mostrarCarrito">
+    <i class="fas fa-shopping-cart"></i>
+    <span *ngIf="carrito.length > 0" class="badge bg-danger">{{ carrito.length }}</span>
+  </button>
+
+</div>
+</div>
+
+
+<!-- PRODUCTOS -->
+<div class="row">
+  <div
+    class="col-md-4 mb-4"
+    *ngFor="let producto of obtenerProductosFiltrados()"
+  >
+    <div class="card h-100 shadow">
+      <img
+        [src]="'assets/' + producto.imagen"
+        class="card-img-top"
+        alt="{{ producto.nombre }}"
+        
+      />
+      <div class="card-body d-flex flex-column justify-content-between">
+        <div>
+          <h5 class="card-title">{{ producto.nombre }}</h5>
+          <p class="card-text">{{ producto.descripcion }}</p>
+          <p class="fw-bold text-success">S/ {{ producto.precio }}</p>
+        </div>
+        <button
+          class="btn btn-agregar mt-3"
+          (click)="agregarAlCarrito(producto)"
+        >
+          🛒 Agregar al carrito
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- OVERLAY CON DETECCIÓN DE CLIC FUERA DEL CARRITO -->
+<div class="overlay-carrito" *ngIf="mostrarCarrito" (click)="cerrarCarrito()">
+  <div class="carrito-flotante mt-3" (click)="$event.stopPropagation()">
+    <h5>🛒 Carrito de Compras</h5>
+    <ul class="list-group mt-2">
+      <li
+        *ngFor="let item of carrito; let i = index"
+        class="list-group-item d-flex justify-content-between align-items-center"
+      >
+        {{ item.nombre }} - S/ {{ item.precio }}
+        <button class="btn btn-sm btn-danger" (click)="eliminarDelCarrito(i)">
+          Eliminar
+        </button>
+      </li>
+    </ul>
+
+    <div class="mt-3 fw-bold text-end">
+      Total: S/ {{ totalCarrito.toFixed(2) }}
+    </div>
+    <div class="carrito-total mt-4 text-center">
+      <h5>Total: S/{{ totalCarrito | number:'1.2-2' }}</h5>
+      <button class="btn pastel-btn" (click)="irAlCarrito()">Ir al carrito</button>
+    </div>
+
+  </div>
+  
+</div>
+
+<div *ngIf="mostrarAlerta" class="alerta-carrito">
+  Producto agregado al carrito 🛒
+</div>

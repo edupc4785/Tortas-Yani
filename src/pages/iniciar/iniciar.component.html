@@ -1,0 +1,97 @@
+<div class="auth-container">
+  <div class="auth-box">
+    <h2 class="auth-title">
+      <!-- Título dinámico -->
+      {{ isRegisterMode ? 'Crear cuenta' : isRecoveryMode ? 'Recuperar contraseña' : isResetMode ? 'Ingrese la nueva contraseña' : 'Bienvenido de nuevo' }}
+    </h2>
+
+    <!-- FORMULARIO DE LOGIN o REGISTRO -->
+    <form *ngIf="!isRecoveryMode && !isResetMode" [formGroup]="isRegisterMode ? registerForm : loginForm"
+      (ngSubmit)="isRegisterMode ? register() : login()" class="auth-form">
+      <!-- Nombre solo en registro -->
+      <div *ngIf="isRegisterMode" class="form-group">
+        <label for="nombre">Nombre</label>
+        <input type="text" id="nombre" formControlName="nombre" placeholder="Tu nombre completo" />
+      </div>
+
+      <!-- Correo -->
+      <div class="form-group">
+        <label for="email">Correo electrónico</label>
+        <input type="email" id="email" formControlName="email" placeholder="correo@ejemplo.com" />
+      </div>
+
+      <!-- Contraseña (solo si no está en modo recuperación) -->
+      <div class="form-group">
+        <label for="password">Contraseña</label>
+        <input type="password" id="password" formControlName="password" placeholder="••••••••" />
+
+        <!-- Enlace de recuperación solo en login -->
+        <div *ngIf="!isRegisterMode" class="forgot-password" (click)="setRecoveryMode(true)">
+          ¿Olvidaste tu contraseña?
+        </div>
+      </div>
+
+      <!-- Botón principal -->
+      <button type="submit" class="submit-btn">
+        {{ isRegisterMode ? 'Registrarse' : 'Ingresar' }}
+      </button>
+    </form>
+
+    <!-- FORMULARIO DE RECUPERACIÓN DE CONTRASEÑA -->
+    <form *ngIf="isRecoveryMode && !isVerifyMode && !isResetMode" [formGroup]="recoveryForm" (ngSubmit)="recoverPassword()" class="auth-form">
+      <div class="form-group">
+        <label for="recoveryEmail">Correo electrónico</label>
+        <input type="email" id="recoveryEmail" formControlName="email" placeholder="Ingresa tu correo" />
+      </div>
+
+      <button type="submit" class="submit-btn">Enviar código</button>
+
+      <div class="toggle-mode mt-2">
+        <span (click)="setRecoveryMode(false)">← Volver al inicio de sesión</span>
+      </div>
+    </form>
+
+    <!-- FORMULARIO DE VERIFICACIÓN DE CÓDIGO -->
+    <form *ngIf="isVerifyMode && !isResetMode" [formGroup]="verifyForm" (ngSubmit)="verifyCode()"
+      class="auth-form">
+      <div class="form-group">
+        <label for="verificationCode">Código de verificación</label>
+        <input type="text" id="verificationCode" formControlName="code" placeholder="Ingresa el código recibido" />
+      </div>
+    
+      <button type="submit" class="submit-btn">Verificar código</button>
+    
+      <div class="toggle-mode mt-2">
+        <span (click)="setRecoveryMode(false)">← Volver</span>
+      </div>
+    </form>
+    
+    <!-- FORMULARIO PARA CAMBIAR CONTRASEÑA -->
+    <form *ngIf="isResetMode" [formGroup]="resetForm" (ngSubmit)="resetPassword()"
+      class="auth-form">
+      <div class="form-group">
+        <label for="newPassword">Nueva contraseña</label>
+        <input type="password" id="newPassword" formControlName="newPassword" placeholder="••••••••" />
+      </div>
+    
+      <div class="form-group">
+        <label for="confirmPassword">Confirmar contraseña</label>
+        <input type="password" id="confirmPassword" formControlName="confirmPassword" placeholder="••••••••" />
+      </div>
+    
+      <button type="submit" class="submit-btn">Cambiar contraseña</button>
+    </form>
+
+    <!-- Cambio entre login y registro -->
+    <div *ngIf="!isRecoveryMode && !isResetMode" class="toggle-mode">
+      <span (click)="toggleMode()">
+        {{ isRegisterMode ? '¿Ya tienes cuenta? Inicia sesión' : '¿No tienes cuenta? Regístrate' }}
+      </span>
+    </div>
+
+    <!-- Mensajes -->
+    <div *ngIf="message" [ngClass]="['auth-message', messageColor]">
+      {{ message }}
+    </div>
+  </div>
+</div>
